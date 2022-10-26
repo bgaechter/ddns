@@ -28,7 +28,7 @@ func GetPublicIPAddress() string {
 	return string(ip)
 }
 
-func setupFlags(){
+func setupFlags() {
 	flag.String("hosted-zone", "", "Hosted Zone in which the dynamic entry should be created")
 	flag.String("subdomain", "ddns", "Subdomain name that should be created")
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
@@ -36,8 +36,8 @@ func setupFlags(){
 	viper.BindPFlags(pflag.CommandLine)
 }
 
-func LoadConfig() {
-
+func LoadConfig() *viper.Viper {
+	log.Println("Loading config")
 	setupFlags()
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
@@ -46,6 +46,7 @@ func LoadConfig() {
 	err := viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			log.Println("No config found - writing default config")
 			viper.WriteConfig()
 			// Config file not found; ignore error if desired
 			// Call init
@@ -53,6 +54,9 @@ func LoadConfig() {
 			log.Fatal(err)
 		}
 	}
+	log.Println("Found configuration")
+
+	return viper.GetViper()
 }
 
 func InitConfig() {
